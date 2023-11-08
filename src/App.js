@@ -30,7 +30,7 @@ export default function App() {
             console.log(ticket_id)
             let original = JSON.parse(row.original)
             let last_update = row.last_update ? JSON.parse(row.last_update) : {}
-            return { ticket_id, ...original, ...last_update }
+            return { ticket_id, ...original, ...last_update, updated: false }
           })
           console.log(merged)
           setReviewsFile(merged)
