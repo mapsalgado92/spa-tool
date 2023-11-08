@@ -9,7 +9,9 @@ import ReviewerList from "./ReviewerList"
 import BoxGrid from "./BoxGrid"
 import ReviewSelector from "./ReviewSelector"
 import Uploader from "./components/files/Uploader"
+import Downloader from "./components/files/Downloader"
 import Papa from "papaparse"
+import DataListInput from "./DataListInput"
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, initialState)
@@ -25,6 +27,7 @@ export default function App() {
         complete: (results) => {
           let merged = results.data.map((row) => {
             let ticket_id = row.ticket_id
+            console.log(ticket_id)
             let original = JSON.parse(row.original)
             let last_update = row.last_update ? JSON.parse(row.last_update) : {}
             return { ticket_id, ...original, ...last_update }
@@ -125,14 +128,33 @@ export default function App() {
               removeHandler={() => removeUploadHandler("rca")}
             />
           </div>
-          <div className="control mb-2 is-align-self-center ">
-            <button
-              className="button is-danger is-light is-small "
-              onClick={() => pull_handler()}
-              disabled={state.pulled.is_pulled || !rcaFile || !reviewsFile}
-            >
-              PULL UPLOADED DATA
-            </button>
+          <div className="field mb-2 is-grouped">
+            <div className="control is-expanded">
+              <button
+                className="button  is-fullwidth is-danger is-light is-small "
+                onClick={() => pull_handler()}
+                disabled={state.pulled.is_pulled || !rcaFile || !reviewsFile}
+              >
+                PULL UPLOADED DATA
+              </button>
+            </div>
+            <div className="control">
+              <Downloader
+                records={
+                  state.updated.is_updated &&
+                  state.updated.data
+                    .filter((r) => r.updated)
+                    .map((r) => ({
+                      ticket_id: r.ticket_id,
+                      updated_date: new Date().toISOString(),
+                      json: JSON.stringify(r),
+                    }))
+                }
+                noHeaders={true}
+                classes={"button is-success is-light is-small"}
+                disabled={!state.updated.is_updated}
+              ></Downloader>
+            </div>
           </div>
 
           {state.updated.data && (
@@ -223,6 +245,27 @@ export default function App() {
                 </div>
               </div>
               <div className="columns is-multiline">
+                <div className="column is-6">
+                  <TextInput
+                    label={"Topic (when required)"}
+                    form={form}
+                    field={"topic"}
+                    placeholder={"Uncategorised topic..."}
+                  />
+                </div>
+                <div className="column is-6">
+                  <DataListInput
+                    label="Updated User Problem"
+                    form={form}
+                    field={"updated_user_problem"}
+                    placeholder={"Searchable dropdown..."}
+                    disabled={
+                      state.selected.user_problem &&
+                      state.selected.user_problem !== "Undefined user problem"
+                    }
+                    datalist={state.rca && state.rca.user_problems}
+                  />
+                </div>
                 <div className="column is-6">
                   <TextInput
                     label={"Agent for Feedback"}
@@ -334,7 +377,7 @@ const reducer = (state, action) => {
           data: action.payload.data,
         },
         updated: {
-          is_uploaded: false,
+          is_updated: false,
           data: structuredClone(action.payload.data),
         },
         selected: null,
@@ -387,8 +430,13 @@ const reducer = (state, action) => {
       records[index] = {
         ...state.selected,
         ...action.payload.form,
+        updated: true,
       }
-      return { ...state, updated: { ...state.updated, data: records } }
+
+      return {
+        ...state,
+        updated: { ...state.updated, is_updated: true, data: records },
+      }
     case "clear_pull":
       return { ...state, pulled: { is_pulled: false, data: null } }
     default:
@@ -836,7 +884,6 @@ const rca_template = {
       "User Unresponsive",
       "Chat properly handled and resolved",
     ],
-    "": ["", "", "", "", "", "", "", "", ""],
   },
   rca1: [
     "Process",
@@ -1007,6 +1054,7 @@ const form_fields = [
 //---------------------------------------------------------- Selected Columns
 const bottom_columns = [
   { name: "ticket_id", label: "Ticket ID" },
+  { name: "last_assigned_agent_email", label: "Agent" },
   { name: "fqt_minutes", label: "FQT (Minutes)" },
   { name: "crt", label: "CRT" },
   { name: "is_first_contact_resolution", label: "FCR" },
@@ -1025,6 +1073,6 @@ const bottom_columns = [
 const top_columns = [
   { name: "rated_date", label: "Rated Date" },
   { name: "cx_vertical", label: "Allocation Vertical" },
-  { name: "last_assigned_agent_email", label: "Agent" },
+  { name: "user_problem", label: "User Problem" },
   { name: "last_assigned_agent_agency", label: "Agency" },
 ]

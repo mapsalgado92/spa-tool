@@ -1,31 +1,34 @@
 import React from "react"
-import { faLink } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 const CSVDownloadButton = (props) => {
   const convertToCSV = (objArray) => {
-    const array = [Object.keys(objArray[0])].concat(objArray)
+    const array = props.noHeaders
+      ? objArray
+      : [Object.keys(objArray[0])].concat(objArray)
 
     return array
       .map((row) =>
-        Object.values(row).map((value) =>
-          typeof value === "string" && value.includes(",")
-            ? `"${value}"`
-            : value
-        )
+        Object.values(row)
+          .map((value) =>
+            typeof value === "string" && value.includes(",")
+              ? `"${value}"`
+              : value
+          )
+          .join("\t")
       )
       .join("\n")
   }
 
   const downloadCSV = () => {
     const csvData = convertToCSV(props.records)
-    const blob = new Blob([csvData], { type: "text/csv" })
+
+    const blob = new Blob([csvData], { type: "text/tsv" })
     const url = window.URL.createObjectURL(blob)
 
     const a = document.createElement("a")
     a.style.display = "none"
     a.href = url
-    a.download = "records.csv"
+    a.download = `updates-${new Date().toISOString()}.csv`
 
     document.body.appendChild(a)
     a.click()
@@ -33,7 +36,15 @@ const CSVDownloadButton = (props) => {
     window.URL.revokeObjectURL(url)
   }
 
-  return <button onClick={() => downloadCSV()}>Download CSV</button>
+  return (
+    <button
+      className={props.classes}
+      disabled={props.disabled}
+      onClick={() => downloadCSV()}
+    >
+      Download CSV
+    </button>
+  )
 }
 
 export default CSVDownloadButton
