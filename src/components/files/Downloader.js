@@ -6,23 +6,15 @@ const CSVDownloadButton = (props) => {
       ? objArray
       : [Object.keys(objArray[0])].concat(objArray)
 
-    return array
-      .map((row) =>
-        Object.values(row)
-          .map((value) =>
-            typeof value === "string" && value.includes(",")
-              ? `"${value}"`
-              : value
-          )
-          .join("\t")
-      )
-      .join("\n")
+    return array.map((row) => Object.values(row).join("\t")).join("\n")
   }
 
   const downloadCSV = () => {
     const csvData = convertToCSV(props.records)
 
-    const blob = new Blob([csvData], { type: "text/tsv" })
+    console.log(csvData)
+
+    const blob = new Blob([csvData], { type: "text/csv" })
     const url = window.URL.createObjectURL(blob)
 
     const a = document.createElement("a")
