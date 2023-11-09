@@ -77,6 +77,9 @@ export default function App() {
       dispatch({ type: "filter_quality_reviewer", payload: { reviewer } })
     else if (field === "final_reviewer")
       dispatch({ type: "filter_final_reviewer", payload: { reviewer } })
+    else if (field === "lm_agent_for_feedback") {
+      dispatch({ type: "filter_line_manager", payload: { reviewer } })
+    }
   }
 
   const select_handler = (ticket_id) => {
@@ -158,28 +161,42 @@ export default function App() {
           </div>
 
           {state.updated.data && (
-            <>
-              <ReviewerList
-                label={"Reviewer Selection"}
-                filter_handler={filter_handler}
-                field={"reviewer"}
-                data={state.updated.data}
-              />
+            <div className="mb-2">
+              <button
+                className="button is-small is-fullwidth"
+                onClick={() => dispatch({ type: "toggle_filters" })}
+              >
+                {state.filter.show ? "Hide" : "Show"} Filters
+              </button>
+              <div hidden={!state.filter.show}>
+                <ReviewerList
+                  label={"Reviewer Selection"}
+                  filter_handler={filter_handler}
+                  field={"reviewer"}
+                  data={state.updated.data}
+                />
 
-              <ReviewerList
-                label={"Final Reviewer Selection"}
-                filter_handler={filter_handler}
-                field={"final_reviewer"}
-                data={state.updated.data}
-              />
+                <ReviewerList
+                  label={"Final Reviewer Selection"}
+                  filter_handler={filter_handler}
+                  field={"final_reviewer"}
+                  data={state.updated.data}
+                />
 
-              <ReviewerList
-                label={"QC Reviewer Selection"}
-                filter_handler={filter_handler}
-                field={"quality_reviewer"}
-                data={state.updated.data}
-              />
-            </>
+                <ReviewerList
+                  label={"Line Manager for Feedback Selection"}
+                  filter_handler={filter_handler}
+                  field={"lm_agent_for_feedback"}
+                  data={state.updated.data}
+                />
+                <ReviewerList
+                  label={"QC Reviewer Selection"}
+                  filter_handler={filter_handler}
+                  field={"quality_reviewer"}
+                  data={state.updated.data}
+                />
+              </div>
+            </div>
           )}
           {state.updated.data && (
             <>
@@ -244,7 +261,7 @@ export default function App() {
                   />
                 </div>
               </div>
-              <div className="columns is-multiline">
+              <div className="columns is-multiline is-centered">
                 <div className="column is-6">
                   <TextInput
                     label={"Topic (when required)"}
@@ -267,22 +284,29 @@ export default function App() {
                   />
                 </div>
                 <div className="column is-6">
-                  <TextInput
+                  <DataListInput
                     label={"Agent for Feedback"}
                     form={form}
                     field={"agent_for_feedback"}
                     placeholder={"example-agent@revolut.com"}
+                    datalist={state.rca.agents && Object.keys(state.rca.agents)}
                   />
                 </div>
                 <div className="column is-6">
-                  <TextInput
-                    label={"LM for Agent for Feedback"}
+                  <DataListInput
+                    label="LM for Feedback"
                     form={form}
                     field={"lm_agent_for_feedback"}
                     placeholder={"example-lm@revolut.com"}
+                    disabled={form.get("agent_for_feedback") ? false : true}
+                    datalist={
+                      state.rca.agents && [
+                        state.rca.agents[form.get("agent_for_feedback")],
+                      ]
+                    }
                   />
                 </div>
-                <div className="column is-6">
+                <div className="column is-4">
                   <ToggleIput
                     label={"Feedback Needed"}
                     form={form}
@@ -291,13 +315,20 @@ export default function App() {
                     false_text={"NO"}
                   />
                 </div>
-                <div className="column is-6">
+                <div className="column is-4">
                   <ToggleIput
                     label={"Feedback Delivered"}
                     form={form}
                     field={"feedback_delivered"}
                     true_text={"YES"}
                     false_text={"NO"}
+                  />
+                </div>
+                <div className="column is-7">
+                  <AreaInput
+                    label={"LM Feedback"}
+                    form={form}
+                    field={"lm_feedback"}
                   />
                 </div>
 
@@ -369,6 +400,14 @@ export default function App() {
 //-----------------------------------------------------------> Reducer & Initial State
 const reducer = (state, action) => {
   switch (action.type) {
+    case "toggle_filters":
+      return {
+        ...state,
+        filter: {
+          ...state.filter,
+          show: !state.filter.show,
+        },
+      }
     case "pull":
       return {
         ...state,
@@ -383,6 +422,7 @@ const reducer = (state, action) => {
         selected: null,
         rca: structuredClone(action.payload.rca),
         filter: {
+          show: false,
           reviewer: null,
           quality_reviewer: null,
         },
@@ -415,6 +455,17 @@ const reducer = (state, action) => {
         filter: {
           ...state.filter,
           final_reviewer:
+            action.payload.reviewer === "All Reviewers"
+              ? ""
+              : action.payload.reviewer,
+        },
+      }
+    case "filter_line_manager":
+      return {
+        ...state,
+        filter: {
+          ...state.filter,
+          lm_agent_for_feedback:
             action.payload.reviewer === "All Reviewers"
               ? ""
               : action.payload.reviewer,
@@ -906,9 +957,11 @@ const initialState = {
   selected: null,
   rca: rca_template,
   filter: {
+    show: true,
     reviewer: null,
     quality_reviewer: null,
     final_reviewer: null,
+    lm_agent_for_feedback: null,
   },
 }
 
@@ -1049,6 +1102,7 @@ const form_fields = [
   { name: "final_reviewer", default: "", required: false },
   { name: "final_quality_reviewer", default: "", required: false },
   { name: "updated_user_problem", default: "", required: false },
+  { name: "lm_feedback", default: "", required: false },
 ]
 
 //---------------------------------------------------------- Selected Columns

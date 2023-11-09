@@ -1,4 +1,10 @@
-import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons"
+import {
+  faCheck,
+  faD,
+  faF,
+  faN,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { uniqueId } from "lodash"
 
@@ -17,9 +23,25 @@ const ReviewSelector = ({ data, filter, selected, select_handler }) => {
             let final_reviewer = filter.final_reviewer
               ? filter.final_reviewer === r.final_reviewer
               : true
-            return reviewer_filter && quality_filter && final_reviewer
+            let lm_agent_for_feedback = filter.lm_agent_for_feedback
+              ? filter.lm_agent_for_feedback === r.lm_agent_for_feedback
+              : true
+            return (
+              reviewer_filter &&
+              quality_filter &&
+              final_reviewer &&
+              lm_agent_for_feedback
+            )
           })
-          .sort((a, b) => (a.rated_date > b.rated_date ? 1 : -1))
+          .sort((a, b) =>
+            a.reviewed === "Reviewed" && b.reviewed !== "Reviewed"
+              ? -1
+              : a.reviewed !== "Reviewed" && b.reviewed === "Reviewed"
+              ? 1
+              : a.rated_date > b.rated_date
+              ? -1
+              : 1
+          )
           .map((record) => (
             <li
               className={`button is-fullwidth is-small is-radiusless  ${
@@ -36,6 +58,19 @@ const ReviewSelector = ({ data, filter, selected, select_handler }) => {
             >
               {`${record.rated_date} | ${record.cx_vertical}`}
               <span className="ml-auto">
+                {record.feedback_needed === "YES" && (
+                  <FontAwesomeIcon icon={faF} />
+                )}
+              </span>
+              <span>
+                {record.feedback_needed === "YES" &&
+                  (record.feedback_delivered === "YES" ? (
+                    <FontAwesomeIcon icon={faD} />
+                  ) : (
+                    <FontAwesomeIcon icon={faN}></FontAwesomeIcon>
+                  ))}
+              </span>
+              <span className="ml-2">
                 {record.reviewed === "Reviewed" ? (
                   <FontAwesomeIcon icon={faCheck} />
                 ) : (
