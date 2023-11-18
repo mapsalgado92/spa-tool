@@ -7,7 +7,11 @@ const ReviewerList = ({ label, filter_handler, field, data }) => {
     <>
       <div className="field">
         <label className="label is-size-7">{label}</label>
-        <div className="control select is-small is-fullwidth">
+        <div
+          className={`control select is-small is-fullwidth ${
+            selected === "All Reviewers" ? "is-secondary" : "is-success"
+          }`}
+        >
           <select
             onChange={(e) => {
               setSelected(e.target.value)

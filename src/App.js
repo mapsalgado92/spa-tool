@@ -27,7 +27,6 @@ export default function App() {
         complete: (results) => {
           let merged = results.data.map((row) => {
             let ticket_id = row.ticket_id
-            console.log(ticket_id)
             let original = JSON.parse(row.original)
             let last_update = row.last_update ? JSON.parse(row.last_update) : {}
             return { ticket_id, ...original, ...last_update, updated: false }
@@ -131,17 +130,17 @@ export default function App() {
               removeHandler={() => removeUploadHandler("rca")}
             />
           </div>
-          <div className="field mb-2 is-grouped">
+          <div className="field">
             <div className="control is-expanded">
               <button
-                className="button  is-fullwidth is-danger is-light is-small "
+                className="button is-danger is-fullwidth is-light is-small mb-2"
                 onClick={() => pull_handler()}
                 disabled={state.pulled.is_pulled || !rcaFile || !reviewsFile}
               >
                 PULL UPLOADED DATA
               </button>
             </div>
-            <div className="control">
+            <div className="control is-expanded">
               <Downloader
                 records={
                   state.updated.is_updated &&
@@ -154,7 +153,7 @@ export default function App() {
                     }))
                 }
                 noHeaders={true}
-                classes={"button is-success is-light is-small"}
+                classes={"button is-success is-fullwidth is-light is-small"}
                 disabled={!state.updated.is_updated}
               ></Downloader>
             </div>
@@ -166,7 +165,7 @@ export default function App() {
                 className="button is-small is-fullwidth"
                 onClick={() => dispatch({ type: "toggle_filters" })}
               >
-                {state.filter.show ? "Hide" : "Show"} Filters
+                {state.filter.show ? "HIDE" : "SHOW"} FILTERS
               </button>
               <div hidden={!state.filter.show}>
                 <ReviewerList
@@ -234,7 +233,7 @@ export default function App() {
 
             <form name="form box">
               <div className="columns">
-                <div className="column is-4 ">
+                <div className="column is-4">
                   <RCAFormBlock
                     form={form}
                     rca={state.rca}
@@ -261,8 +260,8 @@ export default function App() {
                   />
                 </div>
               </div>
-              <div className="columns is-multiline is-centered">
-                <div className="column is-6">
+              <div className="columns is-centered">
+                <div className="column is-4">
                   <TextInput
                     label={"Topic (when required)"}
                     form={form}
@@ -270,7 +269,7 @@ export default function App() {
                     placeholder={"Uncategorised topic..."}
                   />
                 </div>
-                <div className="column is-6">
+                <div className="column is-4">
                   <DataListInput
                     label="Updated User Problem"
                     form={form}
@@ -283,7 +282,10 @@ export default function App() {
                     datalist={state.rca && state.rca.user_problems}
                   />
                 </div>
-                <div className="column is-6">
+              </div>
+
+              <div className="columns">
+                <div className="column is-4 box has-background-white-er">
                   <DataListInput
                     label={"Agent for Feedback"}
                     form={form}
@@ -291,8 +293,6 @@ export default function App() {
                     placeholder={"example-agent@revolut.com"}
                     datalist={state.rca.agents && Object.keys(state.rca.agents)}
                   />
-                </div>
-                <div className="column is-6">
                   <DataListInput
                     label="LM for Feedback"
                     form={form}
@@ -305,90 +305,90 @@ export default function App() {
                       ]
                     }
                   />
-                </div>
-                <div className="column is-4">
-                  <ToggleIput
-                    label={"Feedback Needed"}
-                    form={form}
-                    field={"feedback_needed"}
-                    true_text={"YES"}
-                    false_text={"NO"}
-                  />
-                </div>
-                <div className="column is-4">
-                  <ToggleIput
-                    label={"Feedback Delivered"}
-                    form={form}
-                    field={"feedback_delivered"}
-                    true_text={"YES"}
-                    false_text={"NO"}
-                  />
-                </div>
-                <div className="column is-7">
                   <AreaInput
                     label={"LM Feedback"}
                     form={form}
                     field={"lm_feedback"}
+                    rows="4"
                   />
+                  <br></br>
+                  <div className="columns">
+                    <div className="column is-half">
+                      <ToggleIput
+                        label={"Feedback Needed"}
+                        form={form}
+                        field={"feedback_needed"}
+                        true_text={"YES"}
+                        false_text={"NO"}
+                      />
+                    </div>
+                    <div className="column is-half">
+                      <ToggleIput
+                        label={"Feedback Delivered"}
+                        form={form}
+                        field={"feedback_delivered"}
+                        true_text={"YES"}
+                        false_text={"NO"}
+                      />
+                    </div>
+                  </div>
                 </div>
-
-                <div className="column is-6">
+                <div className="column is-4">
                   <AreaInput
                     label={"Reviewer Comment"}
                     form={form}
                     field={"reviewer_comment"}
+                    rows="10"
                   />
-                </div>
-                <div className="column is-6">
-                  <AreaInput
-                    label={"Quality Check Comment"}
-                    form={form}
-                    field={"quality_check"}
-                  />
-                </div>
-                <div className="column is-6">
                   <TextInput
                     label={"Final Reviewer"}
                     form={form}
                     field={"final_reviewer"}
                     placeholder={form.get("reviewer")}
                   />
+                  <br></br>
+                  <br></br>
+                  <ToggleIput
+                    label={"Review Status"}
+                    form={form}
+                    field={"is_quality_reviewed"}
+                    true_text={"Reviewed"}
+                    false_text={"Not reviewed"}
+                  />
                 </div>
-                <div className="column is-6">
+                <div className="column is-4">
+                  <AreaInput
+                    label={"Quality Check Comment"}
+                    form={form}
+                    field={"quality_check"}
+                    rows="10"
+                  />
                   <TextInput
                     label={"Final Quality Reviewer"}
                     form={form}
                     field={"final_quality_reviewer"}
                     placeholder={form.get("quality_reviewer")}
                   />
-                </div>
-                <div className="column is-6">
-                  <ToggleIput
-                    label={"Review Status"}
-                    form={form}
-                    field={"reviewed"}
-                    true_text={"Reviewed"}
-                    false_text={"Not reviewed"}
-                  />
-                </div>
-                <div className="column is-6">
+                  <br></br>
+                  <br></br>
                   <ToggleIput
                     label={"Quality Check Status"}
                     form={form}
-                    field={"quality_reviewed"}
+                    field={"is_reviewed"}
                     true_text={"Reviewed"}
                     false_text={"Not reviewed"}
                   />
                 </div>
               </div>
-              <BoxGrid columns={bottom_columns} selected={state.selected} />
               <button
-                className="button is-large is-success is-size-6"
+                className="button is-large is-success is-fullwidth is-size-6 my-4"
                 onClick={() => save_handler()}
                 type="button"
               >
-                Save Review
+                SAVE REVIEW
               </button>
+              <BoxGrid columns={bottom_columns} selected={state.selected} />
+              <footer>by SuperMario</footer>
             </form>
           </div>
         )}
@@ -1082,13 +1082,13 @@ const form_fields = [
     type: "textarea",
   },
   {
-    name: "reviewed",
+    name: "is_reviewed",
     label: "Is Reviewed?",
     default: "Not Reviewed",
     required: false,
   },
   {
-    name: "quality_reviewed",
+    name: "is_quality_reviewed",
     label: "Is Quality Reviewed?",
     default: "Not Reviewed",
     required: false,

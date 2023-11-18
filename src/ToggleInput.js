@@ -3,7 +3,7 @@ const ToggleIput = ({ label, form, field, true_text, false_text }) => {
     <>
       <label className="label">{label}</label>
       <div
-        className={`button is-small ${
+        className={`button is-small is-light ${
           form.get(field) === true_text ? "is-success" : "is-danger"
         }`}
         type="button"

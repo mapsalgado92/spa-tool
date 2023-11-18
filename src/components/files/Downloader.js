@@ -26,6 +26,10 @@ const CSVDownloadButton = (props) => {
     a.click()
 
     window.URL.revokeObjectURL(url)
+
+    if (props.alert) {
+      alert(props.alert)
+    }
   }
 
   return (

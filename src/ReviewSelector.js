@@ -34,9 +34,9 @@ const ReviewSelector = ({ data, filter, selected, select_handler }) => {
             )
           })
           .sort((a, b) =>
-            a.reviewed === "Reviewed" && b.reviewed !== "Reviewed"
+            a.is_reviewed === "Reviewed" && b.is_reviewed !== "Reviewed"
               ? -1
-              : a.reviewed !== "Reviewed" && b.reviewed === "Reviewed"
+              : a.is_reviewed !== "Reviewed" && b.is_reviewed === "Reviewed"
               ? 1
               : a.rated_date > b.rated_date
               ? -1
@@ -45,7 +45,7 @@ const ReviewSelector = ({ data, filter, selected, select_handler }) => {
           .map((record) => (
             <li
               className={`button is-fullwidth is-small is-radiusless  ${
-                record.reviewed ? "is-success" : "is-danger"
+                record.is_reviewed ? "is-success" : "is-danger"
               } ${
                 selected
                   ? record.ticket_id !== selected.ticket_id
@@ -71,7 +71,7 @@ const ReviewSelector = ({ data, filter, selected, select_handler }) => {
                   ))}
               </span>
               <span className="ml-2">
-                {record.reviewed === "Reviewed" ? (
+                {record.is_reviewed === "Reviewed" ? (
                   <FontAwesomeIcon icon={faCheck} />
                 ) : (
                   <FontAwesomeIcon icon={faTimes} />
