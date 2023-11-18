@@ -93,6 +93,7 @@ export default function App() {
       type: "save_form",
       payload: { form: form.getForm() },
     })
+    alert(`Review Saved (Id: ${state.selected.ticket_id})`)
   }
 
   const pull_handler = async () => {
@@ -152,6 +153,7 @@ export default function App() {
                       json: JSON.stringify(r),
                     }))
                 }
+                alert={download_alert_message}
                 noHeaders={true}
                 classes={"button is-success is-fullwidth is-light is-small"}
                 disabled={!state.updated.is_updated}
@@ -351,7 +353,7 @@ export default function App() {
                   <ToggleIput
                     label={"Review Status"}
                     form={form}
-                    field={"is_quality_reviewed"}
+                    field={"is_reviewed"}
                     true_text={"Reviewed"}
                     false_text={"Not reviewed"}
                   />
@@ -374,7 +376,7 @@ export default function App() {
                   <ToggleIput
                     label={"Quality Check Status"}
                     form={form}
-                    field={"is_reviewed"}
+                    field={"is_quality_reviewed"}
                     true_text={"Reviewed"}
                     false_text={"Not reviewed"}
                   />
@@ -1040,6 +1042,12 @@ const form_fields = [
     required: true,
   },
   {
+    name: "topic",
+    label: "Topic",
+    default: "",
+    required: false,
+  },
+  {
     name: "agent_for_feedback",
     label: "Agent for Feedback",
     default: "",
@@ -1130,3 +1138,6 @@ const top_columns = [
   { name: "user_problem", label: "User Problem" },
   { name: "last_assigned_agent_agency", label: "Agency" },
 ]
+
+const download_alert_message =
+  "Updates downloaded.\nTo persist your changes import the 'updates' CSV into your Google Sheets source file.\nMake sure to select the APPEND method and TAB as delimiter."

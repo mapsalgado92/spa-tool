@@ -78,7 +78,7 @@ const ReviewSelector = ({ data, filter, selected, select_handler }) => {
                 )}
               </span>
               <span>
-                {record.quality_reviewed === "Reviewed" ? (
+                {record.is_quality_reviewed === "Reviewed" ? (
                   <FontAwesomeIcon icon={faCheck} />
                 ) : (
                   record.quality_reviewer && <FontAwesomeIcon icon={faTimes} />
