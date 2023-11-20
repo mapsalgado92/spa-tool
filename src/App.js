@@ -366,7 +366,7 @@ export default function App() {
                   <AreaInput
                     label={"Quality Check Comment"}
                     form={form}
-                    field={"quality_check"}
+                    field={"quality_check_comment"}
                     rows="10"
                   />
                   <TextInput
