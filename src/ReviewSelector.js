@@ -58,13 +58,13 @@ const ReviewSelector = ({ data, filter, selected, select_handler }) => {
             >
               {`${record.rated_date} | ${record.cx_vertical}`}
               <span className="ml-auto">
-                {record.feedback_needed === "YES" && (
+                {record.feedback_needed === "TRUE" && (
                   <FontAwesomeIcon icon={faF} />
                 )}
               </span>
               <span>
-                {record.feedback_needed === "YES" &&
-                  (record.feedback_delivered === "YES" ? (
+                {record.feedback_needed === "TRUE" &&
+                  (record.feedback_delivered === "TRUE" ? (
                     <FontAwesomeIcon icon={faD} />
                   ) : (
                     <FontAwesomeIcon icon={faN}></FontAwesomeIcon>
