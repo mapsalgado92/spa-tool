@@ -322,6 +322,8 @@ export default function App() {
                         field={"feedback_needed"}
                         true_text={"YES"}
                         false_text={"NO"}
+                        true_value={"TRUE"}
+                        false_value={"FALSE"}
                       />
                     </div>
                     <div className="column is-half">
@@ -331,6 +333,8 @@ export default function App() {
                         field={"feedback_delivered"}
                         true_text={"YES"}
                         false_text={"NO"}
+                        true_value={"TRUE"}
+                        false_value={"FALSE"}
                       />
                     </div>
                   </div>
@@ -1048,13 +1052,6 @@ const form_fields = [
     required: false,
   },
   {
-    name: "agent_for_feedback",
-    label: "Agent for Feedback",
-    default: "",
-    required: false,
-    type: "email",
-  },
-  {
     name: "feedback_needed",
     label: "Feedback Needed",
     default: "",
@@ -1069,12 +1066,20 @@ const form_fields = [
     type: "string",
   },
   {
+    name: "agent_for_feedback",
+    label: "Agent for Feedback",
+    default: "",
+    required: false,
+    type: "email",
+  },
+  {
     name: "lm_agent_for_feedback",
     label: "Line Manager (Agent for Feedback)",
     default: "",
     required: false,
     type: "email",
   },
+  { name: "lm_feedback", default: "", required: false },
   {
     name: "reviewer_comment",
     label: "Reviewer Comment",
@@ -1083,7 +1088,7 @@ const form_fields = [
     type: "textarea",
   },
   {
-    name: "quality_check",
+    name: "quality_check_comment",
     label: "Quality Check Comment",
     default: "",
     required: false,
@@ -1110,7 +1115,6 @@ const form_fields = [
   { name: "final_reviewer", default: "", required: false },
   { name: "final_quality_reviewer", default: "", required: false },
   { name: "updated_user_problem", default: "", required: false },
-  { name: "lm_feedback", default: "", required: false },
 ]
 
 //---------------------------------------------------------- Selected Columns
