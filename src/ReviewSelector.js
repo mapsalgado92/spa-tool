@@ -1,10 +1,4 @@
-import {
-  faCheck,
-  faD,
-  faF,
-  faN,
-  faTimes,
-} from "@fortawesome/free-solid-svg-icons"
+import { faCheckCircle, faTimes } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { uniqueId } from "lodash"
 
@@ -38,6 +32,10 @@ const ReviewSelector = ({ data, filter, selected, select_handler }) => {
               ? -1
               : a.is_reviewed !== "Reviewed" && b.is_reviewed === "Reviewed"
               ? 1
+              : a.updated && !b.updated
+              ? -1
+              : !a.updated && b.updated
+              ? 1
               : a.rated_date > b.rated_date
               ? -1
               : 1
@@ -45,7 +43,11 @@ const ReviewSelector = ({ data, filter, selected, select_handler }) => {
           .map((record) => (
             <li
               className={`button is-fullwidth is-small is-radiusless  ${
-                record.is_reviewed ? "is-success" : "is-danger"
+                record.is_reviewed === "Reviewed"
+                  ? "is-success"
+                  : record.is_reviewed
+                  ? "is-link"
+                  : "is-danger"
               } ${
                 selected
                   ? record.ticket_id !== selected.ticket_id
@@ -56,34 +58,40 @@ const ReviewSelector = ({ data, filter, selected, select_handler }) => {
               onClick={() => select_handler(record.ticket_id)}
               key={uniqueId()}
             >
+              {record.updated && (
+                <span className="tag is-link is-light is-rounded is-small mr-1">
+                  U
+                </span>
+              )}
               {`${record.rated_date} | ${record.cx_vertical}`}
               <span className="ml-auto">
-                {record.feedback_needed === "TRUE" && (
-                  <FontAwesomeIcon icon={faF} />
-                )}
-              </span>
-              <span>
                 {record.feedback_needed === "TRUE" &&
                   (record.feedback_delivered === "TRUE" ? (
-                    <FontAwesomeIcon icon={faD} />
+                    <span className="tag is-success is-light is-rounded is-small">
+                      fb
+                    </span>
                   ) : (
-                    <FontAwesomeIcon icon={faN}></FontAwesomeIcon>
+                    <span className="tag is-danger is-light is-rounded is-small">
+                      fb
+                    </span>
                   ))}
               </span>
-              <span className="ml-2">
+              <span className="ml-1">
                 {record.is_reviewed === "Reviewed" ? (
-                  <FontAwesomeIcon icon={faCheck} />
+                  <FontAwesomeIcon icon={faCheckCircle} />
                 ) : (
                   <FontAwesomeIcon icon={faTimes} />
                 )}
               </span>
-              <span>
-                {record.is_quality_reviewed === "Reviewed" ? (
-                  <FontAwesomeIcon icon={faCheck} />
-                ) : (
-                  record.quality_reviewer && <FontAwesomeIcon icon={faTimes} />
-                )}
-              </span>
+              {record.quality_reviewer && (
+                <span className="ml-1">
+                  {record.is_quality_reviewed === "Reviewed" ? (
+                    <FontAwesomeIcon icon={faCheckCircle} />
+                  ) : (
+                    <FontAwesomeIcon icon={faTimes} />
+                  )}
+                </span>
+              )}
             </li>
           ))}
     </ul>
