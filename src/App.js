@@ -12,6 +12,7 @@ import Uploader from "./components/files/Uploader"
 import Downloader from "./components/files/Downloader"
 import Papa from "papaparse"
 import DataListInput from "./DataListInput"
+import DateList from "./DateList"
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, initialState)
@@ -79,6 +80,11 @@ export default function App() {
     else if (field === "lm_agent_for_feedback") {
       dispatch({ type: "filter_line_manager", payload: { reviewer } })
     }
+  }
+
+  const date_selection_handler = (field, date) => {
+    if (field === "rated_date")
+      dispatch({ type: "filter_rated_date", payload: { date } })
   }
 
   const select_handler = (ticket_id) => {
@@ -170,6 +176,12 @@ export default function App() {
                 {state.filter.show ? "HIDE" : "SHOW"} FILTERS
               </button>
               <div hidden={!state.filter.show}>
+                <DateList
+                  label={"Date Selection"}
+                  filter_handler={date_selection_handler}
+                  field={"rated_date"}
+                  data={state.updated.data}
+                />
                 <ReviewerList
                   label={"Reviewer Selection"}
                   filter_handler={filter_handler}
@@ -475,6 +487,15 @@ const reducer = (state, action) => {
             action.payload.reviewer === "All Reviewers"
               ? ""
               : action.payload.reviewer,
+        },
+      }
+    case "filter_rated_date":
+      return {
+        ...state,
+        filter: {
+          ...state.filter,
+          rated_date:
+            action.payload.reviewer === "All Dates" ? "" : action.payload.date,
         },
       }
     case "set_selected":
