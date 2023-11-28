@@ -495,7 +495,7 @@ const reducer = (state, action) => {
         filter: {
           ...state.filter,
           rated_date:
-            action.payload.reviewer === "All Dates" ? "" : action.payload.date,
+            action.payload.date === "All Dates" ? "" : action.payload.date,
         },
       }
     case "set_selected":
