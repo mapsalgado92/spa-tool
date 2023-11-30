@@ -276,6 +276,20 @@ export default function App() {
               </div>
               <div className="columns is-centered">
                 <div className="column is-4">
+                  <DataListInput
+                    label={"CX Vertical"}
+                    form={form}
+                    field={"cx_vertical"}
+                    placeholder={"No vertical allocated..."}
+                    datalist={
+                      state.updated &&
+                      Array.from(
+                        new Set(state.updated.data.map((d) => d.cx_vertical))
+                      )
+                    }
+                  />
+                </div>
+                <div className="column is-4">
                   <TextInput
                     label={"Topic (when required)"}
                     form={form}
@@ -1136,6 +1150,7 @@ const form_fields = [
   { name: "final_reviewer", default: "", required: false },
   { name: "final_quality_reviewer", default: "", required: false },
   { name: "updated_user_problem", default: "", required: false },
+  { name: "cx_vertical", default: "", required: false },
 ]
 
 //---------------------------------------------------------- Selected Columns
