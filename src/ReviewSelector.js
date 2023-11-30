@@ -44,7 +44,7 @@ const ReviewSelector = ({ data, filter, selected, select_handler }) => {
               ? -1
               : 1
           )
-          .map((record) => (
+          .map((record, idx) => (
             <li
               className={`button is-fullwidth is-small is-radiusless  ${
                 record.is_reviewed === "Reviewed"
@@ -96,6 +96,7 @@ const ReviewSelector = ({ data, filter, selected, select_handler }) => {
                   )}
                 </span>
               )}
+              <span className="ml-2">{`[${idx}]`}</span>
             </li>
           ))}
     </ul>
