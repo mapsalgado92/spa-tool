@@ -8,6 +8,7 @@ const FormDropdown = ({
   form,
   callback,
   reset,
+  remove_label,
 }) => {
   const [selected, setSelected] = useState(null)
   const curr_val = form.get(fieldName)
@@ -30,6 +31,9 @@ const FormDropdown = ({
         disabled={disabled}
         onChange={(e) => {
           let value = e.target.value
+          if (value === remove_label) {
+            value = null
+          }
           console.log("Value:", value)
           setSelected(value)
 
@@ -56,6 +60,7 @@ const FormDropdown = ({
               {item}
             </option>
           ))}
+        {selected && <option value={null}>{remove_label}</option>}
       </select>
     </div>
   )

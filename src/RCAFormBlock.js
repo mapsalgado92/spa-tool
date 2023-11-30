@@ -19,6 +19,7 @@ const RCAFormBlock = ({ form, rca, label, level, vertical }) => {
               fieldName={l1}
               options={rca.rca1}
               reset={[l2, l3]}
+              remove_label={"...remove selection"}
             ></FormDropdown>
           </div>
         </div>
@@ -29,6 +30,7 @@ const RCAFormBlock = ({ form, rca, label, level, vertical }) => {
               fieldName={l2}
               options={form.get(l1) && rca.rca2[form.get(l1)]}
               reset={[l3]}
+              remove_label={"...remove selection"}
             ></FormDropdown>
           </div>
         </div>
@@ -49,6 +51,7 @@ const RCAFormBlock = ({ form, rca, label, level, vertical }) => {
                   ),
                 ].filter((e) => e) //making sure no undefined remains
               }
+              remove_label={"...remove selection"}
             ></FormDropdown>
           </div>
         </div>
