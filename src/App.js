@@ -13,6 +13,7 @@ import Downloader from "./components/files/Downloader"
 import Papa from "papaparse"
 import DataListInput from "./DataListInput"
 import DateList from "./DateList"
+import VerticalList from "./VerticalList"
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, initialState)
@@ -70,15 +71,17 @@ export default function App() {
     dispatch({ type: "clear_pull" })
   }
 
-  const filter_handler = (field, reviewer) => {
+  const filter_handler = (field, item) => {
     if (field === "reviewer")
-      dispatch({ type: "filter_reviewer", payload: { reviewer } })
+      dispatch({ type: "filter_reviewer", payload: { reviewer: item } })
     else if (field === "quality_reviewer")
-      dispatch({ type: "filter_quality_reviewer", payload: { reviewer } })
+      dispatch({ type: "filter_quality_reviewer", payload: { reviewer: item } })
     else if (field === "final_reviewer")
-      dispatch({ type: "filter_final_reviewer", payload: { reviewer } })
-    else if (field === "lm_agent_for_feedback") {
-      dispatch({ type: "filter_line_manager", payload: { reviewer } })
+      dispatch({ type: "filter_final_reviewer", payload: { reviewer: item } })
+    else if (field === "lm_agent_for_feedback")
+      dispatch({ type: "filter_line_manager", payload: { reviewer: item } })
+    else if (field === "cx_vertical") {
+      dispatch({ type: "filter_cx_vertical", payload: { cx_vertical: item } })
     }
   }
 
@@ -180,6 +183,12 @@ export default function App() {
                   label={"Date Selection"}
                   filter_handler={date_selection_handler}
                   field={"rated_date"}
+                  data={state.updated.data}
+                />
+                <VerticalList
+                  label={"Vertical Selection"}
+                  filter_handler={filter_handler}
+                  field={"cx_vertical"}
                   data={state.updated.data}
                 />
                 <ReviewerList
@@ -501,6 +510,17 @@ const reducer = (state, action) => {
             action.payload.reviewer === "All Reviewers"
               ? ""
               : action.payload.reviewer,
+        },
+      }
+    case "filter_cx_vertical":
+      return {
+        ...state,
+        filter: {
+          ...state.filter,
+          cx_vertical:
+            action.payload.cx_vertical === "All Queues/Verticals"
+              ? ""
+              : action.payload.cx_vertical,
         },
       }
     case "filter_rated_date":

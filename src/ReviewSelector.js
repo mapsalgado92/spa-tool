@@ -23,12 +23,16 @@ const ReviewSelector = ({ data, filter, selected, select_handler }) => {
             let rated_date = filter.rated_date
               ? filter.rated_date === r.rated_date
               : true
+            let cx_vertical = filter.cx_vertical
+              ? filter.cx_vertical === r.cx_vertical
+              : true
             return (
               reviewer_filter &&
               quality_filter &&
               final_reviewer &&
               lm_agent_for_feedback &&
-              rated_date
+              rated_date &&
+              cx_vertical
             )
           })
           .sort((a, b) =>
