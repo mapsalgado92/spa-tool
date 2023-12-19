@@ -2,7 +2,7 @@ import { faCheckCircle, faTimes } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { uniqueId } from "lodash"
 
-const ReviewSelector = ({ data, filter, selected, select_handler }) => {
+const ReviewSelector = ({ data, filter, selected, select_handler, peek }) => {
   return (
     <ul>
       {data &&
@@ -26,13 +26,17 @@ const ReviewSelector = ({ data, filter, selected, select_handler }) => {
             let cx_vertical = filter.cx_vertical
               ? filter.cx_vertical === r.cx_vertical
               : true
+            let ticket_id = filter.ticket_id
+              ? r.ticket_id.includes(filter.ticket_id)
+              : true
             return (
               reviewer_filter &&
               quality_filter &&
               final_reviewer &&
               lm_agent_for_feedback &&
               rated_date &&
-              cx_vertical
+              cx_vertical &&
+              ticket_id
             )
           })
           .sort((a, b) =>
@@ -71,7 +75,21 @@ const ReviewSelector = ({ data, filter, selected, select_handler }) => {
                   U
                 </span>
               )}
+
               {`${record.rated_date} | ${record.cx_vertical}`}
+              {peek && record[peek.field] && (
+                <div className="ml-4">
+                  {`${peek.label} »`}
+                  <span
+                    className={
+                      "tag ml-1 is-light is-rounded " +
+                      peek.get_classes(record[peek.field])
+                    }
+                  >
+                    {`${peek.render(record[peek.field])}`}
+                  </span>
+                </div>
+              )}
               <span className="ml-auto">
                 {record.feedback_needed === "TRUE" &&
                   (record.feedback_delivered === "TRUE" ? (

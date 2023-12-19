@@ -14,6 +14,8 @@ import Papa from "papaparse"
 import DataListInput from "./DataListInput"
 import DateList from "./DateList"
 import VerticalList from "./VerticalList"
+import SearchFilter from "./SearchFilter"
+import FieldPeekList from "./FieldPeekList"
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, initialState)
@@ -82,7 +84,13 @@ export default function App() {
       dispatch({ type: "filter_line_manager", payload: { reviewer: item } })
     else if (field === "cx_vertical") {
       dispatch({ type: "filter_cx_vertical", payload: { cx_vertical: item } })
+    } else if (field === "ticket_id") {
+      dispatch({ type: "search_ticket_id", payload: { search: item } })
     }
+  }
+
+  const peek_handler = (peek) => {
+    dispatch({ type: "peek_selection", payload: { peek } })
   }
 
   const date_selection_handler = (field, date) => {
@@ -123,7 +131,7 @@ export default function App() {
           overflowY: "hidden",
         }}
       >
-        <div className="column is-3 is-flex is-flex-direction-column mb-0 card is-fullheight">
+        <div className="column is-4 is-flex is-flex-direction-column mb-0 card is-fullheight">
           <div className="control mb-2">
             <label className="label is-size-7 ">Reviews Upload</label>
             <Uploader
@@ -173,50 +181,107 @@ export default function App() {
           {state.updated.data && (
             <div className="mb-2">
               <button
-                className="button is-small is-fullwidth"
+                className="button is-small is-fullwidth is-info is-light"
                 onClick={() => dispatch({ type: "toggle_filters" })}
               >
                 {state.filter.show ? "HIDE" : "SHOW"} FILTERS
               </button>
               <div hidden={!state.filter.show}>
-                <DateList
-                  label={"Date Selection"}
-                  filter_handler={date_selection_handler}
-                  field={"rated_date"}
-                  data={state.updated.data}
-                />
-                <VerticalList
-                  label={"Vertical Selection"}
-                  filter_handler={filter_handler}
-                  field={"cx_vertical"}
-                  data={state.updated.data}
-                />
-                <ReviewerList
-                  label={"Reviewer Selection"}
-                  filter_handler={filter_handler}
-                  field={"reviewer"}
-                  data={state.updated.data}
-                />
-
-                <ReviewerList
-                  label={"Final Reviewer Selection"}
-                  filter_handler={filter_handler}
-                  field={"final_reviewer"}
-                  data={state.updated.data}
-                />
-
-                <ReviewerList
-                  label={"Line Manager for Feedback Selection"}
-                  filter_handler={filter_handler}
-                  field={"lm_agent_for_feedback"}
-                  data={state.updated.data}
-                />
-                <ReviewerList
-                  label={"QC Reviewer Selection"}
-                  filter_handler={filter_handler}
-                  field={"quality_reviewer"}
-                  data={state.updated.data}
-                />
+                <div className="columns is-multiline p-2">
+                  <div className="column is-half">
+                    <DateList
+                      label={"Date"}
+                      filter_handler={date_selection_handler}
+                      field={"rated_date"}
+                      data={state.updated.data}
+                    />
+                  </div>
+                  <div className="column is-half">
+                    <VerticalList
+                      label={"Vertical"}
+                      filter_handler={filter_handler}
+                      field={"cx_vertical"}
+                      data={state.updated.data}
+                    />
+                  </div>
+                  <div className="column is-half">
+                    <ReviewerList
+                      label={"Reviewer"}
+                      filter_handler={filter_handler}
+                      field={"reviewer"}
+                      data={state.updated.data}
+                    />
+                  </div>
+                  <div className="column is-half">
+                    <ReviewerList
+                      label={"Final Reviewer"}
+                      filter_handler={filter_handler}
+                      field={"final_reviewer"}
+                      data={state.updated.data}
+                    />
+                  </div>
+                  <div className="column is-half">
+                    <ReviewerList
+                      label={"LM for FB"}
+                      filter_handler={filter_handler}
+                      field={"lm_agent_for_feedback"}
+                      data={state.updated.data}
+                    />
+                  </div>
+                  <div className="column is-half">
+                    <ReviewerList
+                      label={"QC Reviewer"}
+                      filter_handler={filter_handler}
+                      field={"quality_reviewer"}
+                      data={state.updated.data}
+                    />
+                  </div>
+                  <div className="column is-half">
+                    <SearchFilter
+                      label={"Ticket ID (search)"}
+                      filter_handler={filter_handler}
+                      field={"ticket_id"}
+                      data={state.updated.data}
+                    />
+                  </div>
+                  <div className="column is-half">
+                    <FieldPeekList
+                      label={"Peek Field"}
+                      peek_handler={peek_handler}
+                      fields={[
+                        {
+                          label: "CRT",
+                          field: "crt",
+                          render: (v) => parseInt(v),
+                          get_classes: (v) =>
+                            parseInt(v) > 48
+                              ? "is-danger"
+                              : parseInt(v) > 6
+                              ? "is-warning"
+                              : "is-success",
+                        },
+                        {
+                          label: "FQT",
+                          field: "fqt_minutes",
+                          render: (v) => parseInt(v),
+                          get_classes: (v) =>
+                            parseInt(v) > 15
+                              ? "is-danger"
+                              : parseInt(v) > 5
+                              ? "is-warning"
+                              : "is-success",
+                        },
+                        {
+                          label: "Has Mass Message",
+                          field: "has_mass_message",
+                          render: (v) => v,
+                          get_classes: (v) =>
+                            v === "TRUE" ? "is-danger" : "is-success",
+                        },
+                      ]}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -234,6 +299,7 @@ export default function App() {
                   filter={state.filter}
                   selected={state.selected}
                   select_handler={select_handler}
+                  peek={state.peek}
                 />
               </div>
             </>
@@ -242,7 +308,7 @@ export default function App() {
 
         {state.selected && (
           <div
-            className="column is-9 has-text-centered"
+            className="column is-8 has-text-centered"
             style={{
               maxHeight: "100%",
               overflowY: "auto",
@@ -441,6 +507,11 @@ export default function App() {
 //-----------------------------------------------------------> Reducer & Initial State
 const reducer = (state, action) => {
   switch (action.type) {
+    case "peek_selection":
+      return {
+        ...state,
+        peek: action.payload.peek || null,
+      }
     case "toggle_filters":
       return {
         ...state,
@@ -530,6 +601,15 @@ const reducer = (state, action) => {
           ...state.filter,
           rated_date:
             action.payload.date === "All Dates" ? "" : action.payload.date,
+        },
+      }
+    case "search_ticket_id":
+      return {
+        ...state,
+        filter: {
+          ...state.filter,
+          ticket_id:
+            action.payload.search === "" ? null : action.payload.search,
         },
       }
     case "set_selected":
