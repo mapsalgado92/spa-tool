@@ -29,6 +29,10 @@ const ReviewSelector = ({ data, filter, selected, select_handler, peek }) => {
             let ticket_id = filter.ticket_id
               ? r.ticket_id.includes(filter.ticket_id)
               : true
+            let user_problem = filter.user_problem
+              ? r.user_problem === filter.user_problem ||
+                r.updated_user_problem === filter.user_problem
+              : true
             return (
               reviewer_filter &&
               quality_filter &&
@@ -36,7 +40,8 @@ const ReviewSelector = ({ data, filter, selected, select_handler, peek }) => {
               lm_agent_for_feedback &&
               rated_date &&
               cx_vertical &&
-              ticket_id
+              ticket_id &&
+              user_problem
             )
           })
           .sort((a, b) =>
@@ -109,7 +114,7 @@ const ReviewSelector = ({ data, filter, selected, select_handler, peek }) => {
                   <FontAwesomeIcon icon={faTimes} />
                 )}
               </span>
-              {record.quality_reviewer && (
+              {(record.quality_reviewer || record.final_quality_reviewer) && (
                 <span className="ml-1">
                   {record.is_quality_reviewed === "Reviewed" ? (
                     <FontAwesomeIcon icon={faCheckCircle} />

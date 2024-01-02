@@ -16,6 +16,7 @@ import DateList from "./DateList"
 import VerticalList from "./VerticalList"
 import SearchFilter from "./SearchFilter"
 import FieldPeekList from "./FieldPeekList"
+import UserProblemList from "./UserProblemList"
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, initialState)
@@ -86,6 +87,8 @@ export default function App() {
       dispatch({ type: "filter_cx_vertical", payload: { cx_vertical: item } })
     } else if (field === "ticket_id") {
       dispatch({ type: "search_ticket_id", payload: { search: item } })
+    } else if (field === "user_problem") {
+      dispatch({ type: "filter_user_problem", payload: { user_problem: item } })
     }
   }
 
@@ -275,10 +278,43 @@ export default function App() {
                           label: "Has Mass Message",
                           field: "has_mass_message",
                           render: (v) => v,
+                          get_classes: (v) => "",
+                        },
+                        {
+                          label: "UP",
+                          field: "user_problem",
+                          render: (v) =>
+                            (v && v.length) > 32 ? v.slice(0, 32) + "..." : v,
+                          get_classes: (v) => "",
+                        },
+                        {
+                          label: "Up. UP",
+                          field: "updated_user_problem",
+                          render: (v) =>
+                            (v && v.length) > 32 ? v.slice(0, 32) + "..." : v,
+                          get_classes: (v) => "",
+                        },
+                        {
+                          label: "Main RCA",
+                          field: "rca1",
+                          render: (v) =>
+                            (v && v.length) > 32 ? v.slice(0, 32) + "..." : v,
                           get_classes: (v) =>
-                            v === "TRUE" ? "is-danger" : "is-success",
+                            v === "Product" || v === "Process"
+                              ? "is-warning"
+                              : v === "People"
+                              ? "is-danger"
+                              : "is-secondary",
                         },
                       ]}
+                    />
+                  </div>
+                  <div className="column is-fullwidth">
+                    <UserProblemList
+                      label={"User Problems"}
+                      filter_handler={filter_handler}
+                      field={"user_problem"}
+                      datalist={state.rca && state.rca.user_problems}
                     />
                   </div>
                 </div>
@@ -610,6 +646,17 @@ const reducer = (state, action) => {
           ...state.filter,
           ticket_id:
             action.payload.search === "" ? null : action.payload.search,
+        },
+      }
+    case "filter_user_problem":
+      return {
+        ...state,
+        filter: {
+          ...state.filter,
+          user_problem:
+            action.payload.date === "All User Problems"
+              ? ""
+              : action.payload.user_problem,
         },
       }
     case "set_selected":
