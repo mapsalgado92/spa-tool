@@ -281,14 +281,16 @@ export default function App() {
                           get_classes: (v) => "",
                         },
                         {
-                          label: "UP",
+                          label: "Original User Problem",
+                          short_label: "Orig. UP",
                           field: "user_problem",
                           render: (v) =>
                             (v && v.length) > 32 ? v.slice(0, 32) + "..." : v,
                           get_classes: (v) => "",
                         },
                         {
-                          label: "Up. UP",
+                          label: "Updated User Problem",
+                          short_label: "Updt. UP",
                           field: "updated_user_problem",
                           render: (v) =>
                             (v && v.length) > 32 ? v.slice(0, 32) + "..." : v,

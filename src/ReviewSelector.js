@@ -84,7 +84,7 @@ const ReviewSelector = ({ data, filter, selected, select_handler, peek }) => {
               {`${record.rated_date} | ${record.cx_vertical}`}
               {peek && record[peek.field] && (
                 <div className="ml-4">
-                  {`${peek.label} »`}
+                  {`${peek.short_label || peek.label} »`}
                   <span
                     className={
                       "tag ml-1 is-light is-rounded " +
