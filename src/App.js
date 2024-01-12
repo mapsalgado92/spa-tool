@@ -304,7 +304,7 @@ export default function App() {
                           get_classes: (v) => "is-light is-warning",
                         },
                         {
-                          label: "Reviewer",
+                          label: "Main RCA",
                           field: "rca1",
                           render: (v) =>
                             (v && v.length) > 32 ? v.slice(0, 32) + "..." : v,
