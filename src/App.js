@@ -297,7 +297,14 @@ export default function App() {
                           get_classes: (v) => "",
                         },
                         {
-                          label: "Main RCA",
+                          label: "Last Spec Queue",
+                          field: "last_specialised_queue",
+                          render: (v) =>
+                            (v && v.length) > 32 ? v.slice(0, 32) + "..." : v,
+                          get_classes: (v) => "is-light is-warning",
+                        },
+                        {
+                          label: "Reviewer",
                           field: "rca1",
                           render: (v) =>
                             (v && v.length) > 32 ? v.slice(0, 32) + "..." : v,
