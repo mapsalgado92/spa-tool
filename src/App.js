@@ -297,8 +297,8 @@ export default function App() {
                           get_classes: (v) => "",
                         },
                         {
-                          label: "Last Spec Queue",
-                          field: "last_specialised_queue",
+                          label: "Queue Name",
+                          field: "queue_name",
                           render: (v) =>
                             (v && v.length) > 32 ? v.slice(0, 32) + "..." : v,
                           get_classes: (v) => "is-light is-warning",
