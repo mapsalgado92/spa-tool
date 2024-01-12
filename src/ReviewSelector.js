@@ -107,6 +107,19 @@ const ReviewSelector = ({ data, filter, selected, select_handler, peek }) => {
                     </span>
                   ))}
               </span>
+              <span>
+                {(record.user_problem === "Undefined user problem" ||
+                  !record.user_problem) &&
+                  (!record.updated_user_problem ? (
+                    <span className="tag is-danger is-light is-rounded is-small">
+                      u
+                    </span>
+                  ) : (
+                    <span className="tag is-success is-light is-rounded is-small">
+                      u
+                    </span>
+                  ))}
+              </span>
               <span className="ml-1">
                 {record.is_reviewed === "Reviewed" ? (
                   <FontAwesomeIcon icon={faCheckCircle} />
