@@ -108,11 +108,15 @@ const ReviewSelector = ({ data, filter, selected, select_handler, peek }) => {
                   ))}
                 {(record.user_problem === "Undefined user problem" ||
                   !record.user_problem) &&
-                  !record.updated_user_problem && (
-                    <span className="tag is-warning is-light is-rounded is-small">
+                  (record.updated_user_problem ? (
+                    <span className="tag is-warning is-rounded is-small">
                       u
                     </span>
-                  )}
+                  ) : (
+                    <span className="tag is-secondary is-light is-rounded is-small">
+                      u
+                    </span>
+                  ))}
               </span>
 
               <span className="ml-1">
