@@ -25,7 +25,7 @@ const UserProblemList = ({ label, filter_handler, field, datalist }) => {
             }}
           />
           <datalist id={unique.current}>
-            {datalist.map((i) => (
+            {[...datalist, "Undefined (special filter)"].map((i) => (
               <option key={uniqueId()}>{i}</option>
             ))}
           </datalist>

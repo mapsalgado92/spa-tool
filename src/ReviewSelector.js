@@ -31,7 +31,10 @@ const ReviewSelector = ({ data, filter, selected, select_handler, peek }) => {
               : true
             let user_problem = filter.user_problem
               ? r.user_problem === filter.user_problem ||
-                r.updated_user_problem === filter.user_problem
+                r.updated_user_problem === filter.user_problem ||
+                (filter.user_problem === "Undefined (special filter)" &&
+                  (r.user_problem === "Undefined user problem" ||
+                    !r.user_problem))
               : true
             return (
               reviewer_filter &&
