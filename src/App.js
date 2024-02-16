@@ -17,6 +17,7 @@ import VerticalList from "./VerticalList"
 import SearchFilter from "./SearchFilter"
 import FieldPeekList from "./FieldPeekList"
 import UserProblemList from "./UserProblemList"
+import LineManagerIDList from "./LineManagerIDList"
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, initialState)
@@ -89,6 +90,8 @@ export default function App() {
       dispatch({ type: "search_ticket_id", payload: { search: item } })
     } else if (field === "user_problem") {
       dispatch({ type: "filter_user_problem", payload: { user_problem: item } })
+    } else if (field === "last_assigned_agent_lm_id") {
+      dispatch({ type: "filter_lm_id", payload: { lm_id: item } })
     }
   }
 
@@ -134,6 +137,8 @@ export default function App() {
           overflowY: "hidden",
         }}
       >
+        {/*  ## SIDEBAR ------------------------------------------------  */}
+
         <div className="column is-4 is-flex is-flex-direction-column mb-0 card is-fullheight">
           <div className="control mb-2">
             <label className="label is-size-7 ">Reviews Upload</label>
@@ -180,6 +185,8 @@ export default function App() {
               ></Downloader>
             </div>
           </div>
+
+          {/*  #### FILTERS ------------------------------------------------  */}
 
           {state.updated.data && (
             <div className="mb-2">
@@ -315,10 +322,18 @@ export default function App() {
                               ? "is-danger"
                               : "is-secondary",
                         },
+                        {
+                          label: "Agency",
+                          field: "last_assigned_agent_agency",
+                          render: (v) =>
+                            (v && v.length) > 32 ? v.slice(0, 32) + "..." : v,
+                          get_classes: (v) =>
+                            v === "Revolut" ? "is-success" : "is-danger",
+                        },
                       ]}
                     />
                   </div>
-                  <div className="column is-fullwidth">
+                  <div className="column is-half">
                     <UserProblemList
                       label={"User Problems"}
                       filter_handler={filter_handler}
@@ -326,10 +341,21 @@ export default function App() {
                       datalist={state.rca && state.rca.user_problems}
                     />
                   </div>
+                  <div className="column is-half">
+                    <LineManagerIDList
+                      label={"Line Manager ID"}
+                      filter_handler={filter_handler}
+                      field={"last_assigned_agent_lm_id"}
+                      data={state.updated.data}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           )}
+
+          {/*  #### REVIEWS LIST ------------------------------------------------  */}
+
           {state.updated.data && (
             <>
               <div className="tag py-4 is-fullwidth is-dark is-radiusless">
@@ -492,11 +518,17 @@ export default function App() {
                     field={"reviewer_comment"}
                     rows="10"
                   />
-                  <TextInput
+                  <DataListInput
                     label={"Final Reviewer"}
                     form={form}
                     field={"final_reviewer"}
                     placeholder={form.get("reviewer")}
+                    datalist={
+                      state.updated &&
+                      [
+                        ...new Set(state.updated.data.map((r) => r.reviewer)),
+                      ].sort()
+                    }
                   />
                   <br></br>
                   <br></br>
@@ -666,6 +698,17 @@ const reducer = (state, action) => {
             action.payload.date === "All User Problems"
               ? ""
               : action.payload.user_problem,
+        },
+      }
+    case "filter_lm_id":
+      return {
+        ...state,
+        filter: {
+          ...state.filter,
+          lm_id:
+            action.payload.lm_id === "All Line Managers"
+              ? ""
+              : action.payload.lm_id,
         },
       }
     case "set_selected":

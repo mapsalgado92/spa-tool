@@ -36,6 +36,11 @@ const ReviewSelector = ({ data, filter, selected, select_handler, peek }) => {
                   (r.user_problem === "Undefined user problem" ||
                     !r.user_problem))
               : true
+
+            let lm_id = filter.lm_id
+              ? filter.lm_id === r.last_assigned_agent_lm_id
+              : true
+
             return (
               reviewer_filter &&
               quality_filter &&
@@ -44,7 +49,8 @@ const ReviewSelector = ({ data, filter, selected, select_handler, peek }) => {
               rated_date &&
               cx_vertical &&
               ticket_id &&
-              user_problem
+              user_problem &&
+              lm_id
             )
           })
           .sort((a, b) =>
