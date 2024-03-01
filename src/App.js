@@ -555,13 +555,31 @@ export default function App() {
                   />
                   <br></br>
                   <br></br>
-                  <ToggleIput
-                    label={"Quality Check Status"}
-                    form={form}
-                    field={"is_quality_reviewed"}
-                    true_text={"Reviewed"}
-                    false_text={"Not reviewed"}
-                  />
+                  <div className="columns">
+                    <div className="column is-6">
+                      <ToggleIput
+                        label={"QC Status"}
+                        form={form}
+                        field={"is_quality_reviewed"}
+                        true_text={"Reviewed"}
+                        false_text={"Not reviewed"}
+                      />
+                    </div>
+                    <div className="column is-6">
+                      <ToggleIput
+                        label={"Approved"}
+                        form={form}
+                        field={"is_quality_approved"}
+                        true_text={"YES"}
+                        false_text={"NO"}
+                        true_value={"TRUE"}
+                        false_value={"FALSE"}
+                        disabled={
+                          form.get("is_quality_reviewed") === "Not reviewed"
+                        }
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
               <button
@@ -1338,6 +1356,12 @@ const form_fields = [
     name: "is_quality_reviewed",
     label: "Is Quality Reviewed?",
     default: "Not Reviewed",
+    required: false,
+  },
+  {
+    name: "is_quality_approved",
+    label: "Is Quality Approved?",
+    default: "QC Approved",
     required: false,
   },
   {
