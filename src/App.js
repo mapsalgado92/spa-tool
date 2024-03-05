@@ -1,130 +1,138 @@
-import useForm from "./hooks/useForm"
-import { useReducer, useState } from "react"
-import RCAFormBlock from "./RCAFormBlock"
-import IDLink from "./IDLink"
-import TextInput from "./TextInput"
-import ToggleIput from "./ToggleInput"
-import AreaInput from "./AreaInput"
-import ReviewerList from "./ReviewerList"
-import BoxGrid from "./BoxGrid"
-import ReviewSelector from "./ReviewSelector"
-import Uploader from "./components/files/Uploader"
-import Downloader from "./components/files/Downloader"
-import Papa from "papaparse"
-import DataListInput from "./DataListInput"
-import DateList from "./DateList"
-import VerticalList from "./VerticalList"
-import SearchFilter from "./SearchFilter"
-import FieldPeekList from "./FieldPeekList"
-import UserProblemList from "./UserProblemList"
-import LineManagerIDList from "./LineManagerIDList"
+import useForm from "./hooks/useForm";
+import { useReducer, useState } from "react";
+import RCAFormBlock from "./RCAFormBlock";
+import IDLink from "./IDLink";
+import TextInput from "./TextInput";
+import ToggleIput from "./ToggleInput";
+import AreaInput from "./AreaInput";
+import ReviewerList from "./ReviewerList";
+import BoxGrid from "./BoxGrid";
+import ReviewSelector from "./ReviewSelector";
+import Uploader from "./components/files/Uploader";
+import Downloader from "./components/files/Downloader";
+import Papa from "papaparse";
+import DataListInput from "./DataListInput";
+import DateList from "./DateList";
+import VerticalList from "./VerticalList";
+import SearchFilter from "./SearchFilter";
+import FieldPeekList from "./FieldPeekList";
+import UserProblemList from "./UserProblemList";
+import LineManagerIDList from "./LineManagerIDList";
 
 export default function App() {
-  const [state, dispatch] = useReducer(reducer, initialState)
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  const [reviewsFile, setReviewsFile] = useState(null)
-  const [rcaFile, setRcaFile] = useState(null)
+  const [reviewsFile, setReviewsFile] = useState(null);
+  const [rcaFile, setRcaFile] = useState(null);
 
-  const form = useForm({ fields: form_fields })
+  const form = useForm({ fields: form_fields });
 
   const uploadHandler = (file, type) => {
     if (type === "reviews") {
       Papa.parse(file, {
         complete: (results) => {
           let merged = results.data.map((row) => {
-            let ticket_id = row.ticket_id
-            let original = JSON.parse(row.original)
-            let last_update = row.last_update ? JSON.parse(row.last_update) : {}
-            return { ticket_id, ...original, ...last_update, updated: false }
-          })
-          console.log(merged)
-          setReviewsFile(merged)
+            let ticket_id = row.ticket_id;
+            let original = JSON.parse(row.original);
+            let last_update = row.last_update
+              ? JSON.parse(row.last_update)
+              : {};
+            return { ticket_id, ...original, ...last_update, updated: false };
+          });
+          console.log(merged);
+          setReviewsFile(merged);
         },
         header: true,
         skipEmptyLines: true,
-      })
+      });
     } else if (type === "rca") {
       Papa.parse(file, {
         complete: (results) => {
-          let rca = {}
+          let rca = {};
           results.data.forEach(
             (row) => (rca[row["level"]] = JSON.parse(row["json"]))
-          )
-          console.log(rca)
-          setRcaFile(rca)
+          );
+          console.log(rca);
+          setRcaFile(rca);
         },
         header: true,
         skipEmptyLines: true,
-      })
+      });
     } else {
-      console.log("Error, wrong type.")
+      console.log("Error, wrong type.");
     }
-  }
+  };
 
   const removeUploadHandler = (type) => {
     switch (type) {
       case "reviews":
-        setReviewsFile(null)
-        break
+        setReviewsFile(null);
+        break;
       case "rca":
-        setRcaFile(null)
-        break
+        setRcaFile(null);
+        break;
       default:
-        break
+        break;
     }
-    dispatch({ type: "clear_pull" })
-  }
+    dispatch({ type: "clear_pull" });
+  };
 
   const filter_handler = (field, item) => {
     if (field === "reviewer")
-      dispatch({ type: "filter_reviewer", payload: { reviewer: item } })
+      dispatch({ type: "filter_reviewer", payload: { reviewer: item } });
     else if (field === "quality_reviewer")
-      dispatch({ type: "filter_quality_reviewer", payload: { reviewer: item } })
+      dispatch({
+        type: "filter_quality_reviewer",
+        payload: { reviewer: item },
+      });
     else if (field === "final_reviewer")
-      dispatch({ type: "filter_final_reviewer", payload: { reviewer: item } })
+      dispatch({ type: "filter_final_reviewer", payload: { reviewer: item } });
     else if (field === "lm_agent_for_feedback")
-      dispatch({ type: "filter_line_manager", payload: { reviewer: item } })
+      dispatch({ type: "filter_line_manager", payload: { reviewer: item } });
     else if (field === "cx_vertical") {
-      dispatch({ type: "filter_cx_vertical", payload: { cx_vertical: item } })
+      dispatch({ type: "filter_cx_vertical", payload: { cx_vertical: item } });
     } else if (field === "ticket_id") {
-      dispatch({ type: "search_ticket_id", payload: { search: item } })
+      dispatch({ type: "search_ticket_id", payload: { search: item } });
     } else if (field === "user_problem") {
-      dispatch({ type: "filter_user_problem", payload: { user_problem: item } })
+      dispatch({
+        type: "filter_user_problem",
+        payload: { user_problem: item },
+      });
     } else if (field === "last_assigned_agent_lm_id") {
-      dispatch({ type: "filter_lm_id", payload: { lm_id: item } })
+      dispatch({ type: "filter_lm_id", payload: { lm_id: item } });
     }
-  }
+  };
 
   const peek_handler = (peek) => {
-    dispatch({ type: "peek_selection", payload: { peek } })
-  }
+    dispatch({ type: "peek_selection", payload: { peek } });
+  };
 
   const date_selection_handler = (field, date) => {
     if (field === "rated_date")
-      dispatch({ type: "filter_rated_date", payload: { date } })
-  }
+      dispatch({ type: "filter_rated_date", payload: { date } });
+  };
 
   const select_handler = (ticket_id) => {
-    let selection = state.updated.data.find((r) => r.ticket_id === ticket_id)
-    form.resetAll()
-    form.setMany(selection)
-    dispatch({ type: "set_selected", payload: { selection } })
-  }
+    let selection = state.updated.data.find((r) => r.ticket_id === ticket_id);
+    form.resetAll();
+    form.setMany(selection);
+    dispatch({ type: "set_selected", payload: { selection } });
+  };
 
   const save_handler = () => {
     dispatch({
       type: "save_form",
       payload: { form: form.getForm() },
-    })
-    alert(`Review Saved (Id: ${state.selected.ticket_id})`)
-  }
+    });
+    alert(`Review Saved (Id: ${state.selected.ticket_id})`);
+  };
 
   const pull_handler = async () => {
     dispatch({
       type: "pull",
       payload: { data: reviewsFile, rca: rcaFile },
-    })
-  }
+    });
+  };
 
   //----------------------------------------------------------> JSX
 
@@ -596,7 +604,7 @@ export default function App() {
         )}
       </div>
     </main>
-  )
+  );
 }
 
 //-----------------------------------------------------------> Reducer & Initial State
@@ -606,7 +614,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         peek: action.payload.peek || null,
-      }
+      };
     case "toggle_filters":
       return {
         ...state,
@@ -614,7 +622,7 @@ const reducer = (state, action) => {
           ...state.filter,
           show: !state.filter.show,
         },
-      }
+      };
     case "pull":
       return {
         ...state,
@@ -633,7 +641,7 @@ const reducer = (state, action) => {
           reviewer: null,
           quality_reviewer: null,
         },
-      }
+      };
     case "filter_reviewer":
       return {
         ...state,
@@ -644,7 +652,7 @@ const reducer = (state, action) => {
               ? ""
               : action.payload.reviewer,
         },
-      }
+      };
     case "filter_quality_reviewer":
       return {
         ...state,
@@ -655,7 +663,7 @@ const reducer = (state, action) => {
               ? ""
               : action.payload.reviewer,
         },
-      }
+      };
     case "filter_final_reviewer":
       return {
         ...state,
@@ -666,7 +674,7 @@ const reducer = (state, action) => {
               ? ""
               : action.payload.reviewer,
         },
-      }
+      };
     case "filter_line_manager":
       return {
         ...state,
@@ -677,7 +685,7 @@ const reducer = (state, action) => {
               ? ""
               : action.payload.reviewer,
         },
-      }
+      };
     case "filter_cx_vertical":
       return {
         ...state,
@@ -688,7 +696,7 @@ const reducer = (state, action) => {
               ? ""
               : action.payload.cx_vertical,
         },
-      }
+      };
     case "filter_rated_date":
       return {
         ...state,
@@ -697,7 +705,7 @@ const reducer = (state, action) => {
           rated_date:
             action.payload.date === "All Dates" ? "" : action.payload.date,
         },
-      }
+      };
     case "search_ticket_id":
       return {
         ...state,
@@ -706,7 +714,7 @@ const reducer = (state, action) => {
           ticket_id:
             action.payload.search === "" ? null : action.payload.search,
         },
-      }
+      };
     case "filter_user_problem":
       return {
         ...state,
@@ -717,7 +725,7 @@ const reducer = (state, action) => {
               ? ""
               : action.payload.user_problem,
         },
-      }
+      };
     case "filter_lm_id":
       return {
         ...state,
@@ -728,30 +736,30 @@ const reducer = (state, action) => {
               ? ""
               : action.payload.lm_id,
         },
-      }
+      };
     case "set_selected":
-      return { ...state, selected: action.payload.selection }
+      return { ...state, selected: action.payload.selection };
     case "save_form":
-      let records = state.updated.data
+      let records = state.updated.data;
       let index = records.findIndex(
         (r) => r.ticket_id === state.selected.ticket_id
-      )
+      );
       records[index] = {
         ...state.selected,
         ...action.payload.form,
         updated: true,
-      }
+      };
 
       return {
         ...state,
         updated: { ...state.updated, is_updated: true, data: records },
-      }
+      };
     case "clear_pull":
-      return { ...state, pulled: { is_pulled: false, data: null } }
+      return { ...state, pulled: { is_pulled: false, data: null } };
     default:
-      return state
+      return state;
   }
-}
+};
 
 //---------------------------------------------------------- RCA Structure
 const rca_template = {
@@ -1201,7 +1209,7 @@ const rca_template = {
     "Quantitative Data Point (check if flagged in red)",
     "No Issue Found",
   ],
-}
+};
 
 const initialState = {
   pulled: {
@@ -1221,7 +1229,7 @@ const initialState = {
     final_reviewer: null,
     lm_agent_for_feedback: null,
   },
-}
+};
 
 //----------------------------------------------------------- Form Fields
 const form_fields = [
@@ -1361,7 +1369,7 @@ const form_fields = [
   {
     name: "is_quality_approved",
     label: "Is Quality Approved?",
-    default: "QC Approved",
+    default: "",
     required: false,
   },
   {
@@ -1374,7 +1382,7 @@ const form_fields = [
   { name: "final_quality_reviewer", default: "", required: false },
   { name: "updated_user_problem", default: "", required: false },
   { name: "cx_vertical", default: "", required: false },
-]
+];
 
 //---------------------------------------------------------- Selected Columns
 const bottom_columns = [
@@ -1393,14 +1401,14 @@ const bottom_columns = [
   { name: "quality_reviewer", label: "Quality Reviewer" },
   { name: "last_specialised_queue", label: "Last Specialised Queue" },
   { name: "feedback", label: "Feedback" },
-]
+];
 
 const top_columns = [
   { name: "rated_date", label: "Rated Date" },
   { name: "cx_vertical", label: "Allocation Vertical" },
   { name: "user_problem", label: "User Problem" },
   { name: "last_assigned_agent_agency", label: "Agency" },
-]
+];
 
 const download_alert_message =
-  "Updates downloaded.\nTo persist your changes import the 'updates' CSV into your Google Sheets source file.\nMake sure to select the APPEND method and TAB as delimiter."
+  "Updates downloaded.\nTo persist your changes import the 'updates' CSV into your Google Sheets source file.\nMake sure to select the APPEND method and TAB as delimiter.";
